@@ -3,6 +3,8 @@ import path from 'path';
 
 // Load environment variables at the very beginning
 const result = config({ path: path.join(__dirname, '../.env') });
+config();
+
 
 if (result.error) {
     console.error('Error loading .env file:', result.error);
@@ -16,10 +18,21 @@ console.log('Loaded environment variables:', {
 });
 
 import express from 'express';
+import { DatabaseService } from './services/databaseService';
 import uploadRouter from './routes/upload';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Initialize database
+DatabaseService.initialize()
+    .then(() => {
+        console.log('Database initialized successfully');
+    })
+    .catch(error => {
+        console.error('Failed to initialize database:', error);
+        process.exit(1);
+    });
 
 // Middleware
 app.use(express.json());

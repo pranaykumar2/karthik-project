@@ -58,6 +58,16 @@ forensic-file-system/
    PINATA_API_KEY=your_pinata_api_key
    PINATA_SECRET_KEY=your_pinata_secret_key
    PORT=3000
+   
+   # Database Configuration
+    DB_HOST=localhost
+    DB_USER=your_mysql_username
+    DB_PASSWORD=your_mysql_password
+    DB_NAME=forensic_files
+    
+    # Application Settings
+    UPLOAD_DIR=uploads
+    MAX_FILE_SIZE=10485760
    ```
 
 4. Start the development server:

@@ -1,0 +1,354 @@
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --accent-color: #e74c3c;
+    --background-color: #ecf0f1;
+    --text-color: #2c3e50;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--background-color);
+    margin: 0;
+    padding: 20px;
+    color: var(--text-color);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInDown 0.8s forwards;
+}
+
+.header h1 {
+    color: var(--primary-color);
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    opacity: 0;
+    animation: fadeIn 1s 0.5s forwards;
+}
+
+.custody-form, .inventory-section {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.custody-form:hover, .inventory-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.form-group {
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: slideInLeft 0.5s forwards;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.form-control:focus {
+    border-color: var(--secondary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.file-upload {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    border: 2px dashed var(--secondary-color);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.file-upload:hover {
+    border-color: var(--accent-color);
+    background: rgba(231, 76, 60, 0.05);
+}
+
+.file-upload input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-upload-text {
+    text-align: center;
+    color: var(--secondary-color);
+}
+
+.submit-btn {
+    background: var(--secondary-color);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1.1em;
+    transition: var(--transition);
+}
+
+.submit-btn:hover {
+    background: var(--accent-color);
+    transform: scale(1.02);
+}
+
+.inventory-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.inventory-table th,
+.inventory-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.inventory-table th {
+    background: var(--primary-color);
+    color: white;
+}
+
+.inventory-table tr {
+    transition: var(--transition);
+}
+
+.inventory-table tr:hover {
+    background: rgba(52, 152, 219, 0.1);
+}
+
+.action-btn {
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.view-btn {
+    background: var(--secondary-color);
+    color: white;
+}
+
+.copy-btn {
+    background: var(--primary-color);
+    color: white;
+    margin-left: 8px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.loading-spinner {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--secondary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 8px;
+    color: white;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: var(--transition);
+}
+
+.toast.success {
+    background: #2ecc71;
+}
+
+.toast.error {
+    background: var(--accent-color);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Add these styles to your existing CSS */
+
+.file-info-card {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: #ddd;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress {
+    width: 0%;
+    height: 100%;
+    background: var(--secondary-color);
+    transition: width 0.3s ease;
+}
+
+.file-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.description-cell {
+    max-width: 200px;
+}
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.metadata-dialog {
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+    max-width: 600px;
+    width: 90%;
+}
+
+.metadata-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.metadata-content {
+    padding: 20px;
+}
+
+.metadata-content pre {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.highlight {
+    border-color: var(--accent-color);
+    background: rgba(231, 76, 60, 0.05);
+}
+
+.file-upload.highlight {
+    transform: scale(1.02);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.animate-in {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease forwards;
+}

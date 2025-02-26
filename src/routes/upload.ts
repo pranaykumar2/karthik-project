@@ -3,7 +3,8 @@ import multer from 'multer';
 import path from 'path';
 import { MetadataService } from '../services/metadataService';
 import { PinataService } from '../services/pinataService';
-import { FileStore } from '../services/fileStore';
+import { DatabaseService } from '../services/databaseService';
+import fs from 'fs';
 
 const router = Router();
 const metadataService = new MetadataService();
@@ -13,7 +14,6 @@ const pinataService = new PinataService();
 const UPLOAD_DIR = './uploads';
 
 // Ensure upload directory exists
-import fs from 'fs';
 if (!fs.existsSync(UPLOAD_DIR)) {
     fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
@@ -47,6 +47,7 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
 
         const { description, culpritName, custodyDetails } = req.body;
 
+        // Validate required fields
         if (!description || !culpritName || !custodyDetails) {
             return res.status(400).json({
                 success: false,
@@ -54,28 +55,35 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
             });
         }
 
-        const timestamp = new Date().toISOString();
+        // Extract metadata using the updated MetadataService
+        const extractedMetadata = await metadataService.extractMetadata(req.file.path);
 
         // Upload to IPFS
         const ipfsCid = await pinataService.uploadFile(req.file.path, {
             fileName: req.file.originalname,
             description,
             culpritName,
-            timestamp
+            timestamp: '2025-02-26 17:51:55'
         });
 
-        // Store file information
-        FileStore.addFile({
+        // Prepare file data for database
+        const fileData = {
             fileName: req.file.originalname,
             ipfsCid,
             description,
             culpritName,
             custodyDetails,
-            uploadedAt: timestamp,
-            size: req.file.size
-        });
+            fileSize: req.file.size,
+            mimeType: req.file.mimetype,
+            metadata: extractedMetadata, // Now using the ExtractedMetadata type
+            uploadedBy: 'pranaykumar2',
+            uploadedAt: '2025-02-26 17:51:55'
+        };
 
-        // Clean up the local file
+        // Save to database
+        await DatabaseService.saveFileMetadata(fileData);
+
+        // Clean up local file
         fs.unlink(req.file.path, (err) => {
             if (err) console.error('Error deleting local file:', err);
         });
@@ -84,9 +92,8 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
             success: true,
             ipfsCid,
             fileDetails: {
-                name: req.file.originalname,
-                size: req.file.size,
-                uploadedAt: timestamp
+                ...fileData,
+                metadata: extractedMetadata
             }
         });
     } catch (error) {
@@ -98,18 +105,68 @@ router.post('/upload', upload.single('file'), async (req: Request, res: Response
     }
 });
 
-router.get('/files', (req: Request, res: Response) => {
+router.get('/files', async (req: Request, res: Response) => {
     try {
-        const files = FileStore.getFiles();
-        res.json({
-            success: true,
-            files
-        });
+        const files = await DatabaseService.getAllFiles();
+        res.json({ success: true, files });
     } catch (error) {
         console.error('Error fetching files:', error);
         res.status(500).json({
             success: false,
             error: 'Failed to fetch files'
+        });
+    }
+});
+
+router.get('/metadata/:ipfsCid', async (req: Request, res: Response) => {
+    try {
+        const file = await DatabaseService.getFileByIpfsCid(req.params.ipfsCid);
+        if (!file) {
+            return res.status(404).json({
+                success: false,
+                error: 'File not found'
+            });
+        }
+
+        // Parse the stored metadata string back to an object
+        const metadata = typeof file.metadata === 'string'
+            ? JSON.parse(file.metadata)
+            : file.metadata;
+
+        res.json({
+            success: true,
+            metadata
+        });
+    } catch (error) {
+        console.error('Error fetching metadata:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch metadata'
+        });
+    }
+});
+
+// Add route for searching files
+router.get('/search', async (req: Request, res: Response) => {
+    try {
+        const { query } = req.query;
+        if (!query || typeof query !== 'string') {
+            return res.status(400).json({
+                success: false,
+                error: 'Search query is required'
+            });
+        }
+
+        const files = await DatabaseService.searchFiles(query);
+        res.json({
+            success: true,
+            files
+        });
+    } catch (error) {
+        console.error('Search error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to search files'
         });
     }
 });

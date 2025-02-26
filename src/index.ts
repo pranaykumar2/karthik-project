@@ -1,11 +1,22 @@
-import 'reflect-metadata';
-import express from 'express';
-import { createConnection } from 'typeorm';
+import { config } from 'dotenv';
 import path from 'path';
-import dotenv from 'dotenv';
-import uploadRouter from './routes/upload';
 
-dotenv.config();
+// Load environment variables at the very beginning
+const result = config({ path: path.join(__dirname, '../.env') });
+
+if (result.error) {
+    console.error('Error loading .env file:', result.error);
+    process.exit(1);
+}
+
+console.log('Loaded environment variables:', {
+    PINATA_API_KEY: !!process.env.PINATA_API_KEY,
+    PINATA_SECRET_KEY: !!process.env.PINATA_SECRET_KEY,
+    PORT: process.env.PORT || 3000
+});
+
+import express from 'express';
+import uploadRouter from './routes/upload';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,13 +34,9 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views/index.html'));
 });
 
-// Database connection and server start
-createConnection()
-    .then(() => {
-        app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
-        });
-    })
-    .catch((error) => {
-        console.error('Database connection failed:', error);
-    });
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+    console.log(`Current time (UTC): ${new Date().toISOString()}`);
+    console.log(`Current user: pranaykumar2`);
+});

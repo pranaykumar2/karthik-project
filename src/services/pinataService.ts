@@ -9,8 +9,16 @@ export class PinataService {
         const apiKey = process.env.PINATA_API_KEY;
         const apiSecret = process.env.PINATA_SECRET_KEY;
 
+        // Add debug logging
+        console.log('Environment variables check:');
+        console.log('PINATA_API_KEY exists:', !!apiKey);
+        console.log('PINATA_SECRET_KEY exists:', !!apiSecret);
+
         if (!apiKey || !apiSecret) {
-            throw new Error('Pinata API credentials not found in environment variables');
+            throw new Error(
+                'Pinata API credentials not found in environment variables. ' +
+                'Please ensure .env file exists and contains PINATA_API_KEY and PINATA_SECRET_KEY'
+            );
         }
 
         this.pinata = new PinataSDK(apiKey, apiSecret);
